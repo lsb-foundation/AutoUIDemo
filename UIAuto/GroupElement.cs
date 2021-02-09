@@ -13,11 +13,11 @@ namespace AutoUIDemo.UIAuto
             set => base["Name"] = value;
         }
 
-        [ConfigurationProperty("Description")]
-        public string Description
+        [ConfigurationProperty("Header", IsRequired = true)]
+        public string Header
         {
-            get => base["Description"] as string;
-            set => base["Description"] = value;
+            get => base["Header"] as string;
+            set => base["Header"] = value;
         }
 
 
@@ -33,7 +33,7 @@ namespace AutoUIDemo.UIAuto
             StackPanel groupStackPanel = new StackPanel { Orientation = Orientation.Vertical };
             GroupBox groupBox = new GroupBox
             {
-                Header = string.IsNullOrWhiteSpace(Description) ? Name : Description,
+                Header = this.Header,
                 Content = groupStackPanel
             };
             return groupBox;

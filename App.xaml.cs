@@ -1,9 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Configuration;
-using System.Data;
-using System.Linq;
-using System.Threading.Tasks;
 using System.Windows;
 
 namespace AutoUIDemo
@@ -13,5 +8,14 @@ namespace AutoUIDemo
     /// </summary>
     public partial class App : Application
     {
+        protected override void OnStartup(StartupEventArgs e)
+        {
+            this.DispatcherUnhandledException += (s, se) =>
+            {
+                MessageBox.Show("Exception:" + se.Exception.Message + Environment.NewLine + se.Exception.StackTrace, "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                Current.Shutdown();
+                se.Handled = true;
+            };
+        }
     }
 }

@@ -11,7 +11,7 @@ namespace AutoUIDemo.UIAuto
             set => base["Name"] = value;
         }
 
-        [ConfigurationProperty("Description")]
+        [ConfigurationProperty("Description", IsRequired = true)]
         public string Description
         {
             get => base["Description"] as string;
@@ -23,6 +23,13 @@ namespace AutoUIDemo.UIAuto
         {
             get => base["Type"] as string;
             set => base["Type"] = value;
+        }
+
+        [ConfigurationProperty("DefaultValue")]
+        public string DefaultValue
+        {
+            get => base["DefaultValue"] as string;
+            set => base["DefaultValue"] = value;
         }
     }
 }

@@ -1,11 +1,15 @@
-﻿<?xml version="1.0" encoding="utf-8" ?>
-<configuration>
-  <configSections>
+﻿# AutoUIDemo
+
+## Add UIAuto Section Definition
+Add custom AutoUISection to configSections node of configuration file
+```xml
+<configSections>
     <section name="UIAuto" type="AutoUIDemo.UIAuto.UIAutoSection,AutoUIDemo"/>
   </configSections>
-  <startup>
-    <supportedRuntime version="v4.0" sku=".NETFramework,Version=v4.6.1" />
-  </startup>
+```
+### Add UIAuto Section Configuration
+Add custom UIAuto node to configuration node, like this:
+```xml
   <UIAuto>
     <Tabs>
       <Tab Name="Calibration" Header="Calibration">
@@ -66,4 +70,7 @@
       </Tab>
     </Tabs>
   </UIAuto>
-</configuration>
+```
+## Run Execution
+Run and see.
+![snapshoot](./snapshoot.png)

@@ -17,7 +17,7 @@ namespace AutoUIDemo.UIAuto
             set => base["Name"] = value;
         }
 
-        [ConfigurationProperty("Description")]
+        [ConfigurationProperty("Description", IsRequired = true)]
         public string Description
         {
             get => base["Description"] as string;
@@ -47,7 +47,7 @@ namespace AutoUIDemo.UIAuto
 
         public event Action<object> CommandButtonClicked;
         private readonly List<TextBox> _textBoxList = new List<TextBox>();
-        private readonly List<KeyValuePair<string, string>> _parameterDescriptions = new List<KeyValuePair<string, string>>();
+        private readonly List<ParameterElement> _parameters = new List<ParameterElement>();
 
         public DependencyObject Build()
         {
@@ -59,8 +59,12 @@ namespace AutoUIDemo.UIAuto
             {
                 ParameterElement parameter = Parameters[index];
                 grid.RowDefinitions.Add(new RowDefinition { Height = GridLength.Auto });
-                Label label = new Label { Content = string.IsNullOrWhiteSpace(parameter.Description) ? parameter.Name : parameter.Description };
-                TextBox textBox = new TextBox() { Name = parameter.Name + "TextBox" };
+                Label label = new Label { Content = parameter.Description };
+                TextBox textBox = new TextBox()
+                {
+                    Name = parameter.Name + "TextBox",
+                    Text = parameter.DefaultValue?.ToString()
+                };
                 grid.Children.Add(label);
                 grid.Children.Add(textBox);
                 Grid.SetRow(label, index);
@@ -68,7 +72,7 @@ namespace AutoUIDemo.UIAuto
                 Grid.SetColumn(label, 0);
                 Grid.SetColumn(textBox, 1);
                 _textBoxList.Add(textBox);
-                _parameterDescriptions.Add(new KeyValuePair<string, string>(parameter.Name, parameter.Description));
+                _parameters.Add(parameter);
             }
 
             for (int index = 0; index < Actions.Count; index++)
@@ -77,7 +81,7 @@ namespace AutoUIDemo.UIAuto
                 grid.RowDefinitions.Add(new RowDefinition { Height = GridLength.Auto });
                 Button button = new Button
                 {
-                    Content = string.IsNullOrWhiteSpace(action.Description) ? action.Name : action.Description,
+                    Content = action.Description,
                     Tag = action.Format
                 };
                 button.Click += Button_Click;
@@ -99,19 +103,19 @@ namespace AutoUIDemo.UIAuto
                 MatchCollection matches = Regex.Matches(format, @"{\w+}");
                 foreach (Match match in matches)
                 {
-                    string parameter = match.Value.Trim('{', '}');
-                    TextBox textBox = _textBoxList.FirstOrDefault(box => box.Name == parameter + "TextBox");
+                    string parameterName = match.Value.Trim('{', '}');
+                    TextBox textBox = _textBoxList.FirstOrDefault(box => box.Name == parameterName + "TextBox");
                     if (textBox == null)
                     {
-                        throw new Exception($"参数{parameter}未找到。");
+                        throw new Exception($"参数{parameterName}未找到。");
                     }
                     if (string.IsNullOrWhiteSpace(textBox.Text))
                     {
-                        var parameterKeyValuePair = _parameterDescriptions.FirstOrDefault(kv => kv.Key == parameter);
-                        string parameterDescription = parameterKeyValuePair.Equals(default(KeyValuePair<string, string>)) ? parameter : parameterKeyValuePair.Value;
-                        throw new Exception($"参数{parameterDescription}为空。");
+                        var parameter = _parameters.FirstOrDefault(p => p.Name == parameterName);
+                        string description = parameter?.Description ?? parameterName;
+                        throw new Exception($"参数{description}为空。");
                     }
-                    convertedFormat = convertedFormat.Replace(match.Value, match.Value.Replace(parameter, textBox.Text.Trim()));
+                    convertedFormat = convertedFormat.Replace(match.Value, match.Value.Replace(parameterName, textBox.Text.Trim()));
                 }
                 CommandButtonClicked?.Invoke(convertedFormat);
             }
