@@ -5,7 +5,7 @@ Add custom AutoUISection to configSections node of configuration file
 ```xml
 <configSections>
     <section name="UIAuto" type="AutoUIDemo.UIAuto.UIAutoSection,AutoUIDemo"/>
-  </configSections>
+</configSections>
 ```
 ### Add UIAuto Section Configuration
 Add custom UIAuto node to configuration node, like this:
@@ -73,4 +73,5 @@ Add custom UIAuto node to configuration node, like this:
 ```
 ## Run Execution
 Run and see.
+
 ![snapshoot](./snapshoot.png)
