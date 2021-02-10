@@ -12,9 +12,9 @@ Add custom UIAuto node to configuration node, like this:
 ```xml
   <UIAuto>
     <Tabs>
-      <Tab Name="Calibration" Header="Calibration">
+      <Tab Header="Calibration">
         <Groups>
-          <Group Name="Calibration" Header="Calibration">
+          <Group Header="Calibration">
             <Commands>
               <Command Name="CaliCommand" Description="Cali Command">
                 <Actions>
@@ -23,7 +23,7 @@ Add custom UIAuto node to configuration node, like this:
               </Command>
             </Commands>
           </Group>
-          <Group Name="MeasureVolt" Header="Measure 1~5V volt value">
+          <Group Header="Measure 1~5V volt value">
             <Commands>
               <Command Name="AvstartCommand" Description="AvStart Command">
                 <Parameters>
@@ -36,7 +36,7 @@ Add custom UIAuto node to configuration node, like this:
               </Command>
             </Commands>
           </Group>
-          <Group Name="CheckVolt" Header="Check 1~5V volt value">
+          <Group Header="Check 1~5V volt value">
             <Commands>
               <Command Name="CheckVoltCommand" Description="Check Volt">
                 <Parameters>
@@ -53,9 +53,9 @@ Add custom UIAuto node to configuration node, like this:
           </Group>
         </Groups>
       </Tab>
-      <Tab Name="PlaceholderTag" Header="Placeholder">
+      <Tab Header="Placeholder">
         <Groups>
-          <Group Name="PlaceholderGroup" Header="Placeholder">
+          <Group Header="Placeholder">
             <Commands>
               <Command Name="PlaceholderCommand" Description="Placeholder command">
                 <Parameters>

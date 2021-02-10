@@ -1,8 +1,11 @@
-﻿using System.Configuration;
+﻿using System;
+using System.Configuration;
+using System.Windows;
+using System.Windows.Controls;
 
 namespace AutoUIDemo.UIAuto
 {
-    public class UIAutoSection : ConfigurationSection
+    public class UIAutoSection : ConfigurationSection, IBuildControl
     {
         [ConfigurationProperty("Tabs")]
         [ConfigurationCollection(typeof(TabCollection), AddItemName = "Tab")]
@@ -11,9 +14,33 @@ namespace AutoUIDemo.UIAuto
             get => base["Tabs"] as TabCollection;
         }
 
+        public event Action<UIAutoActionEventArgs> UIAutoActionInvoked;
+
         public static UIAutoSection GetUISection()
         {
             return ConfigurationManager.GetSection("UIAuto") as UIAutoSection;
+        }
+
+        public DependencyObject Build()
+        {
+            TabControl tabControl = new TabControl();
+            foreach (TabElement tabElement in Tabs)
+            {
+                TabItem tab = tabElement.Build() as TabItem;
+                foreach (GroupElement groupElement in tabElement.Groups)
+                {
+                    GroupBox group = groupElement.Build() as GroupBox;
+                    foreach (CommandElement commandElement in groupElement.Commands)
+                    {
+                        commandElement.CommandButtonClicked += (c, a, ps) => UIAutoActionInvoked?.Invoke(new UIAutoActionEventArgs(c, a, ps));
+                        Grid grid = commandElement.Build() as Grid;
+                        (group.Content as StackPanel).Children.Add(grid);
+                    }
+                    (tab.Content as StackPanel).Children.Add(group);
+                }
+                tabControl.Items.Add(tab);
+            }
+            return tabControl;
         }
     }
 }

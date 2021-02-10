@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Configuration;
 using System.Linq;
-using System.Text.RegularExpressions;
 using System.Windows;
 using System.Windows.Controls;
 
@@ -45,7 +44,7 @@ namespace AutoUIDemo.UIAuto
             get => this["Actions"] as ActionCollection;
         }
 
-        public event Action<object> CommandButtonClicked;
+        internal event Action<CommandElement, ActionElement, List<ParameterElement>> CommandButtonClicked;
         private readonly List<TextBox> _textBoxList = new List<TextBox>();
         private readonly List<ParameterElement> _parameters = new List<ParameterElement>();
 
@@ -82,7 +81,7 @@ namespace AutoUIDemo.UIAuto
                 Button button = new Button
                 {
                     Content = action.Description,
-                    Tag = action.Format
+                    Tag = action
                 };
                 button.Click += Button_Click;
                 grid.Children.Add(button);
@@ -96,32 +95,16 @@ namespace AutoUIDemo.UIAuto
 
         private void Button_Click(object sender, RoutedEventArgs e)
         {
-            try
+            if ((sender as Button)?.Tag is ActionElement action)
             {
-                string format = (sender as Button).Tag as string;
-                string convertedFormat = format;
-                MatchCollection matches = Regex.Matches(format, @"{\w+}");
-                foreach (Match match in matches)
+                foreach (ParameterElement parameter in _parameters)
                 {
-                    string parameterName = match.Value.Trim('{', '}');
-                    TextBox textBox = _textBoxList.FirstOrDefault(box => box.Name == parameterName + "TextBox");
-                    if (textBox == null)
+                    if (_textBoxList.FirstOrDefault(box => box.Name == parameter.Name + "TextBox") is TextBox textBox)
                     {
-                        throw new Exception($"参数{parameterName}未找到。");
+                        parameter.Value = textBox.Text;
                     }
-                    if (string.IsNullOrWhiteSpace(textBox.Text))
-                    {
-                        var parameter = _parameters.FirstOrDefault(p => p.Name == parameterName);
-                        string description = parameter?.Description ?? parameterName;
-                        throw new Exception($"参数{description}为空。");
-                    }
-                    convertedFormat = convertedFormat.Replace(match.Value, match.Value.Replace(parameterName, textBox.Text.Trim()));
                 }
-                CommandButtonClicked?.Invoke(convertedFormat);
-            }
-            catch(Exception ex)
-            {
-                MessageBox.Show(ex.Message);
+                CommandButtonClicked?.Invoke(this, action, _parameters);
             }
         }
     }

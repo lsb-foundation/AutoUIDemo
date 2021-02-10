@@ -1,5 +1,7 @@
 ﻿using AutoUIDemo.UIAuto;
 using System;
+using System.Linq;
+using System.Text.RegularExpressions;
 using System.Windows;
 using System.Windows.Controls;
 
@@ -20,29 +22,42 @@ namespace AutoUIDemo
         {
             try
             {
-                UIAutoSection section = UIAutoSection.GetUISection();
-                if (section == null) return;
-
-                Grid mainGrid = new Grid { Margin = new Thickness(8) };
-                TabControl mainTab = new TabControl();
-                foreach (TabElement tabElement in section.Tabs)
+                if (UIAutoSection.GetUISection() is UIAutoSection section)
                 {
-                    TabItem tab = tabElement.Build() as TabItem;
-                    foreach (GroupElement groupElement in tabElement.Groups)
+                    section.UIAutoActionInvoked += Section_UIAutoActionInvoked;
+                    if(section.Build() is TabControl tab)
                     {
-                        GroupBox group = groupElement.Build() as GroupBox;
-                        foreach (CommandElement commandElement in groupElement.Commands)
-                        {
-                            commandElement.CommandButtonClicked += o => MessageBox.Show(o as string);
-                            Grid grid = commandElement.Build() as Grid;
-                            (group.Content as StackPanel).Children.Add(grid);
-                        }
-                        (tab.Content as StackPanel).Children.Add(group);
+                        this.Content = tab;
                     }
-                    mainTab.Items.Add(tab);
                 }
-                mainGrid.Children.Add(mainTab);
-                this.Content = mainGrid;
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message);
+            }
+        }
+
+        private void Section_UIAutoActionInvoked(UIAutoActionEventArgs e)
+        {
+            try
+            {
+                string convertedFormat = e.Action.Format;
+                MatchCollection matches = Regex.Matches(e.Action.Format, @"{\w+}");
+                foreach (Match match in matches)
+                {
+                    string parameterName = match.Value.Trim('{', '}');
+                    if (!(e.Parameters.FirstOrDefault(p => p.Name == parameterName) is ParameterElement parameter))
+                    {
+                        throw new Exception($"参数{parameterName}未找到。");
+                    }
+                    
+                    if (string.IsNullOrWhiteSpace(parameter.Value))
+                    {
+                        throw new Exception($"参数{parameter.Description}为空。");
+                    }
+                    convertedFormat = convertedFormat.Replace(match.Value, parameter.Value);
+                }
+                MessageBox.Show(convertedFormat);
             }
             catch (Exception ex)
             {

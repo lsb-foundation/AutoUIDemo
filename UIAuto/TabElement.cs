@@ -6,13 +6,6 @@ namespace AutoUIDemo.UIAuto
 {
     public class TabElement : ConfigurationElement, IBuildControl
     {
-        [ConfigurationProperty("Name", IsRequired = true)]
-        public string Name
-        {
-            get => base["Name"] as string;
-            set => base["Name"] = value;
-        }
-
         [ConfigurationProperty("Header", IsRequired = true)]
         public string Header
         {

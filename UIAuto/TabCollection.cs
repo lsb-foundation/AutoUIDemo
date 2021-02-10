@@ -11,7 +11,7 @@ namespace AutoUIDemo.UIAuto
 
         protected override object GetElementKey(ConfigurationElement element)
         {
-            return (element as TabElement).Name;
+            return (element as TabElement).Header;
         }
     }
 }

@@ -31,5 +31,7 @@ namespace AutoUIDemo.UIAuto
             get => base["DefaultValue"] as string;
             set => base["DefaultValue"] = value;
         }
+
+        public string Value { get; set; }
     }
 }

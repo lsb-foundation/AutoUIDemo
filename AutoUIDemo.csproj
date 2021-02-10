@@ -67,6 +67,7 @@
     <Compile Include="UIAuto\ParameterElement.cs" />
     <Compile Include="UIAuto\TabCollection.cs" />
     <Compile Include="UIAuto\TabElement.cs" />
+    <Compile Include="UIAuto\UIAutoActionEventArgs.cs" />
     <Compile Include="UIAuto\UIAutoSection.cs" />
     <Page Include="MainWindow.xaml">
       <Generator>MSBuild:Compile</Generator>
