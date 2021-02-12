@@ -1,8 +1,11 @@
-﻿using System.Configuration;
+﻿using System.Collections.Generic;
+using System.Configuration;
+using System.Windows;
+using System.Windows.Controls;
 
 namespace AutoUIDemo.UIAuto
 {
-    public class ActionElement : ConfigurationElement
+    public class ActionElement : ConfigurationElement, IBuildControl
     {
         [ConfigurationProperty("Name", IsRequired = true)]
         public string Name
@@ -24,5 +27,20 @@ namespace AutoUIDemo.UIAuto
             get => base["Format"] as string;
             set => base["Format"] = value;
         }
+
+        private CommandElement _command;
+        public CommandElement Command { get => _command; }
+
+        public IEnumerable<DependencyObject> Build()
+        {
+            Button commandButton = new Button
+            {
+                Content = Description,
+                Tag = this
+            };
+            return new DependencyObject[] { commandButton };
+        }
+
+        public void SetCommand(CommandElement command) => _command = command;
     }
 }

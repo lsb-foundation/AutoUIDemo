@@ -25,7 +25,7 @@ namespace AutoUIDemo
                 if (UIAutoSection.GetUISection() is UIAutoSection section)
                 {
                     section.UIAutoActionInvoked += Section_UIAutoActionInvoked;
-                    if(section.Build() is TabControl tab)
+                    if(section.Build().FirstOrDefault() is TabControl tab)
                     {
                         this.Content = tab;
                     }
@@ -46,7 +46,7 @@ namespace AutoUIDemo
                 foreach (Match match in matches)
                 {
                     string parameterName = match.Value.Trim('{', '}');
-                    if (!(e.Parameters.FirstOrDefault(p => p.Name == parameterName) is ParameterElement parameter))
+                    if (!(e.Action.Command.Parameters.OfType<ParameterElement>().FirstOrDefault(p => p.Name == parameterName) is ParameterElement parameter))
                     {
                         throw new Exception($"参数{parameterName}未找到。");
                     }

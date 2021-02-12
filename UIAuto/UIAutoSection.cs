@@ -1,5 +1,7 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Configuration;
+using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
 
@@ -21,26 +23,26 @@ namespace AutoUIDemo.UIAuto
             return ConfigurationManager.GetSection("UIAuto") as UIAutoSection;
         }
 
-        public DependencyObject Build()
+        public IEnumerable<DependencyObject> Build()
         {
             TabControl tabControl = new TabControl();
             foreach (TabElement tabElement in Tabs)
             {
-                TabItem tab = tabElement.Build() as TabItem;
+                TabItem tab = tabElement.Build().FirstOrDefault() as TabItem;
                 foreach (GroupElement groupElement in tabElement.Groups)
                 {
-                    GroupBox group = groupElement.Build() as GroupBox;
+                    GroupBox group = groupElement.Build().FirstOrDefault() as GroupBox;
                     foreach (CommandElement commandElement in groupElement.Commands)
                     {
-                        commandElement.CommandButtonClicked += (c, a, ps) => UIAutoActionInvoked?.Invoke(new UIAutoActionEventArgs(c, a, ps));
-                        Grid grid = commandElement.Build() as Grid;
+                        commandElement.CommandButtonClicked += act => UIAutoActionInvoked?.Invoke(new UIAutoActionEventArgs(act));
+                        Grid grid = commandElement.Build().FirstOrDefault() as Grid;
                         (group.Content as StackPanel).Children.Add(grid);
                     }
                     (tab.Content as StackPanel).Children.Add(group);
                 }
                 tabControl.Items.Add(tab);
             }
-            return tabControl;
+            return new DependencyObject[] { tabControl };
         }
     }
 }

@@ -1,8 +1,11 @@
-﻿using System.Configuration;
+﻿using System.Collections.Generic;
+using System.Configuration;
+using System.Windows;
+using System.Windows.Controls;
 
 namespace AutoUIDemo.UIAuto
 {
-    public class ParameterElement : ConfigurationElement
+    public class ParameterElement : ConfigurationElement, IBuildControl
     {
         [ConfigurationProperty("Name", IsRequired = true)]
         public string Name
@@ -33,5 +36,16 @@ namespace AutoUIDemo.UIAuto
         }
 
         public string Value { get; set; }
+
+        public IEnumerable<DependencyObject> Build()
+        {
+            Label label = new Label { Content = Description };
+            TextBox textBox = new TextBox()
+            {
+                Name = Name + "TextBox",
+                Text = DefaultValue
+            };
+            return new DependencyObject[] { label, textBox };
+        }
     }
 }

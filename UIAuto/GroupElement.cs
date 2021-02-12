@@ -1,4 +1,5 @@
-﻿using System.Configuration;
+﻿using System.Collections.Generic;
+using System.Configuration;
 using System.Windows;
 using System.Windows.Controls;
 
@@ -21,7 +22,7 @@ namespace AutoUIDemo.UIAuto
             get => this["Commands"] as CommandCollection;
         }
 
-        public DependencyObject Build()
+        public IEnumerable<DependencyObject> Build()
         {
             StackPanel groupStackPanel = new StackPanel { Orientation = Orientation.Vertical };
             GroupBox groupBox = new GroupBox
@@ -29,7 +30,7 @@ namespace AutoUIDemo.UIAuto
                 Header = this.Header,
                 Content = groupStackPanel
             };
-            return groupBox;
+            return new DependencyObject[] { groupBox };
         }
     }
 }

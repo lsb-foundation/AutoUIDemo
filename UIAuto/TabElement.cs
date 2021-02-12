@@ -1,4 +1,5 @@
-﻿using System.Configuration;
+﻿using System.Collections.Generic;
+using System.Configuration;
 using System.Windows;
 using System.Windows.Controls;
 
@@ -20,14 +21,14 @@ namespace AutoUIDemo.UIAuto
             get => this["Groups"] as GroupCollection;
         }
 
-        public DependencyObject Build()
+        public IEnumerable<DependencyObject> Build()
         {
             TabItem tabItem = new TabItem
             {
                 Header = this.Header,
                 Content = new StackPanel()
             };
-            return tabItem;
+            return new DependencyObject[] { tabItem };
         }
     }
 }

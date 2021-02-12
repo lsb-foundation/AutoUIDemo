@@ -1,9 +1,10 @@
-﻿using System.Windows;
+﻿using System.Collections.Generic;
+using System.Windows;
 
 namespace AutoUIDemo.UIAuto
 {
     public interface IBuildControl
     {
-        DependencyObject Build();
+        IEnumerable<DependencyObject> Build();
     }
 }

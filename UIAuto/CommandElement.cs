@@ -44,11 +44,10 @@ namespace AutoUIDemo.UIAuto
             get => this["Actions"] as ActionCollection;
         }
 
-        internal event Action<CommandElement, ActionElement, List<ParameterElement>> CommandButtonClicked;
+        internal event Action<ActionElement> CommandButtonClicked;
         private readonly List<TextBox> _textBoxList = new List<TextBox>();
-        private readonly List<ParameterElement> _parameters = new List<ParameterElement>();
 
-        public DependencyObject Build()
+        public IEnumerable<DependencyObject> Build()
         {
             Grid grid = new Grid();
             grid.ColumnDefinitions.Add(new ColumnDefinition { Width = GridLength.Auto });
@@ -58,12 +57,9 @@ namespace AutoUIDemo.UIAuto
             {
                 ParameterElement parameter = Parameters[index];
                 grid.RowDefinitions.Add(new RowDefinition { Height = GridLength.Auto });
-                Label label = new Label { Content = parameter.Description };
-                TextBox textBox = new TextBox()
-                {
-                    Name = parameter.Name + "TextBox",
-                    Text = parameter.DefaultValue?.ToString()
-                };
+                IEnumerable<DependencyObject> parameterControls = parameter.Build();
+                Label label = parameterControls.FirstOrDefault(c => c is Label) as Label;
+                TextBox textBox = parameterControls.FirstOrDefault(c => c is TextBox) as TextBox;
                 grid.Children.Add(label);
                 grid.Children.Add(textBox);
                 Grid.SetRow(label, index);
@@ -71,18 +67,14 @@ namespace AutoUIDemo.UIAuto
                 Grid.SetColumn(label, 0);
                 Grid.SetColumn(textBox, 1);
                 _textBoxList.Add(textBox);
-                _parameters.Add(parameter);
             }
 
             for (int index = 0; index < Actions.Count; index++)
             {
                 ActionElement action = Actions[index];
                 grid.RowDefinitions.Add(new RowDefinition { Height = GridLength.Auto });
-                Button button = new Button
-                {
-                    Content = action.Description,
-                    Tag = action
-                };
+                action.SetCommand(this);
+                Button button = action.Build().FirstOrDefault() as Button;
                 button.Click += Button_Click;
                 grid.Children.Add(button);
                 Grid.SetRow(button, Parameters.Count + index);
@@ -90,21 +82,21 @@ namespace AutoUIDemo.UIAuto
                 Grid.SetColumnSpan(button, 2);
             }
 
-            return grid;
+            return new DependencyObject[] { grid };
         }
 
         private void Button_Click(object sender, RoutedEventArgs e)
         {
             if ((sender as Button)?.Tag is ActionElement action)
             {
-                foreach (ParameterElement parameter in _parameters)
+                foreach (ParameterElement parameter in Parameters)
                 {
                     if (_textBoxList.FirstOrDefault(box => box.Name == parameter.Name + "TextBox") is TextBox textBox)
                     {
                         parameter.Value = textBox.Text;
                     }
                 }
-                CommandButtonClicked?.Invoke(this, action, _parameters);
+                CommandButtonClicked?.Invoke(action);
             }
         }
     }
